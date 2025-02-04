@@ -1,6 +1,7 @@
 package com.jqs.dashboard.api.controller;
 
 import com.jqs.dashboard.api.entity.Usuario;
+import com.jqs.dashboard.api.service.RoleService;
 import com.jqs.dashboard.api.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
     private final UsuarioService service;
+    private final RoleService roleService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
@@ -34,6 +36,30 @@ public class UsuarioController {
     public ResponseEntity<Object> listar(){
         try{
             var listUsuarios = service.listar();
+            return ResponseEntity.ok(listUsuarios);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<Object> excluir(@PathVariable Long id){
+        try{
+            service.excluir(id);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("roles")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<Object> listarRoles(){
+        try{
+            var listUsuarios = roleService.listar();
             return ResponseEntity.ok(listUsuarios);
         }catch (Exception e){
             log.error(e.getMessage());

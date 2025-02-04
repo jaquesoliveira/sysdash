@@ -50,11 +50,24 @@ public class AcompanhamentoService {
         return repository.findById(id);
     }
 
-    public List<AcompanhamentoRSDto> finaByName(final String userName){
+    public List<AcompanhamentoRSDto> findByName(final String userName){
 
         return repository.findByName(userName).stream()
             .map((item) -> {
                 return new AcompanhamentoRSDto(item.getUsuario(), item.getProspect(), item.getContato(), item.getQualificado());
             }).collect(Collectors.toList());
+    }
+
+    public List<AcompanhamentoRSDto> findAllByName(){
+        List<AcompanhamentoRSDto> retorno = new ArrayList<>();
+
+        usuarioRepository.findAll().forEach(usu -> {
+            var res = repository.findByName(usu.getUsername()).stream()
+                .map((item) -> {
+                    return new AcompanhamentoRSDto(usu.getNome(), item.getProspect(), item.getContato(), item.getQualificado());
+                }).collect(Collectors.toList());
+            retorno.addAll(res);
+        });
+        return retorno;
     }
 }

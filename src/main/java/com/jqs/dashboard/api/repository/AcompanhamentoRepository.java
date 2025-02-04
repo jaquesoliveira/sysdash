@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface AcompanhamentoRepository extends JpaRepository<Acompanhamento, Long> {
 
-    @Query(value = "SELECT ua.user_name as usuario,  " +
+    @Query(value = "SELECT uaG.user_name as usuario,  " +
             " ( select count(acomp.tipo)  " +
             " from public.tb_acompanhamento acomp  " +
             " left join public.tb_usuario_acompanhamento u on acomp.usuario = u.id " +
@@ -33,8 +33,8 @@ public interface AcompanhamentoRepository extends JpaRepository<Acompanhamento, 
             " ) as qualificado " +
             "  " +
             " FROM public.tb_acompanhamento acomp " +
-            " left join public.tb_usuario_acompanhamento ua on acomp.usuario = ua.id " +
-            " WHERE ua.user_name = :name " +
-            "GROUP BY ua.user_name;", nativeQuery = true)
+            " left join public.tb_usuario_acompanhamento uaG on acomp.usuario = uaG.id " +
+            " WHERE uaG.user_name = :name " +
+            "GROUP BY uaG.user_name;", nativeQuery = true)
     List<AcompanhamentoRSDto> findByName(String name);
 }

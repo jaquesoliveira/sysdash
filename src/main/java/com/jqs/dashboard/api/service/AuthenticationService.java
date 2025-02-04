@@ -12,6 +12,12 @@ public class AuthenticationService {
     }
 
     public String authenticate(Authentication authentication) {
+
+        try{
+            jwtService.generateToken(authentication);
+        }catch(Exception e){
+
+        }
         return jwtService.generateToken(authentication);
     }
 

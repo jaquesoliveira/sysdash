@@ -15,6 +15,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -31,7 +32,7 @@ import java.security.interfaces.RSAPublicKey;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer{
 
     @Value("${jwt.public.key}")
     private RSAPublicKey key;
@@ -41,10 +42,14 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+
             .authorizeHttpRequests(
                 auth -> auth
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers("/authenticate").permitAll()
+
                     .anyRequest().authenticated())
+
             .httpBasic(Customizer.withDefaults())
             .oauth2ResourceServer(
                 conf -> conf.jwt(
@@ -76,11 +81,13 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
-                        .allowedMethods(HttpMethod.GET.name(),
-                                HttpMethod.POST.name(),
-                                HttpMethod.DELETE.name())
-                        .allowedHeaders(HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION);
+
+                    .allowedOrigins("*")
+                    .allowedMethods(
+                            HttpMethod.GET.name(),
+                            HttpMethod.POST.name(),
+                            HttpMethod.DELETE.name())
+                    .allowedHeaders(HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION, HttpHeaders.CACHE_CONTROL);
             }
         };
     }
